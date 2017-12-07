@@ -9,7 +9,7 @@ __version__ = 0.1
 
 
 GPG_ID = None
-PASSWORD_FOLDER = "~/.password-store/"
+PASSWORD_FOLDER = expanduser("~/.password-store/")
 GPG_FILE = ".gpg-id"
 
 #################################################################
