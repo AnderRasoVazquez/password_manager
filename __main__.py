@@ -1,6 +1,9 @@
 """This module manages a password storage."""
 import argparse
 import sys
+import string
+from random import randint
+from getpass import getpass
 from os import makedirs
 from os.path import isfile, isdir, expanduser
 from shutil import which
@@ -87,15 +90,27 @@ def init(args):
         print("Created file " + gpg_file_path)
 
 
+def build_pass(args):
+    """Build a password based on args."""
+    passw = string.ascii_lowercase
+    if args.uppercase:
+        passw += string.ascii_uppercase
+    if args.symbols:
+        passw += string.punctuation
+    if args.numbers:
+        passw += string.digits
+
+    return "".join([passw[randint(0, len(passw) - 1)] for x in range(args.length)])
+
+
 def add(args):
-    check()
     """Add new password to the storage."""
-    if args.verbose:
-        print("{} command used".format(args.command))
-        print(args)
-    # if args.insert: un prompt usando getpass (importarlo) para insertar el password de forma oculta, si no,
-        # se veria en el historial de bash y eso es un buen penco
-    # si no args.insert, mirar las demas opciones para crear un pass
+    check()
+    if args.insert:
+        passw = getpass("Insert password: ")
+    else:
+        passw = build_pass(args)
+    print(passw)
         # coger el args.password_dest y mirar si tiene '/'
         # por ejemplo "email/google.gpg", crearia la carpeta email y dentro un archivo "google.gpg" con la contraseña
         # El archivo se cifra usando el "$HOME/.password-store/.gpg-id" que deberiamos tener ya en GPG_ID
@@ -154,7 +169,6 @@ def main():
                             action='store_true',
                             help='insert custom password')
     parser_add.add_argument('-l', '--length',
-                            dest='pass_len',
                             type=int,
                             default=21,
                             help='password length')
