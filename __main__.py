@@ -1,11 +1,15 @@
 """This module manages a password storage."""
 import argparse
 import sys
+from os.path import isfile, isdir, expanduser
+from shutil import which
 
 __version__ = 0.1
 
 
 GPG_ID = None
+PASSWORD_FOLDER = "~/.password-store/"
+GPG_FILE = ".gpg-id"
 
 #################################################################
 # EJEMPLO DE USO
@@ -51,13 +55,14 @@ GPG_ID = None
 
 def check():
     """Initial checks before running the program."""
-    # comprobar si tiene GPG instalado, si no avisar y salir con error
-    # comprobar si existe la carpeta "$HOME/.password-store/" y que tenga el archivo '.gpg_id'
-        # (he puesto esta carpeta para que sea compatible con otro gestor
-        # que tambien usa GPG y con una aplicacion de Android llamada "password store")
-    # si no los tiene decirle que haga un "yapm init"
-    # si los tiene, cargar el id del archivo en la variable GPG_ID (por ejemplo '7D9D16BE')
-    pass
+    if not which("gpg"):
+        sys.exit("GPG binary not found. ¿Is it installed?")
+    gpg_file_path = expanduser(PASSWORD_FOLDER + GPG_FILE)
+    if isfile(gpg_file_path):
+        print("WARNING: password store not configured, please execute:\nyapm init")
+    with open(gpg_file_path) as gpg_file_content:
+        global GPG_ID
+        GPG_ID = gpg_file_content.read().strip()
 
 
 # puede ser buena idea separar init, add y rm en archivos diferentes
@@ -71,6 +76,7 @@ def init(args):
 
 
 def add(args):
+    check()
     """Add new password to the storage."""
     if args.verbose:
         print("{} command used".format(args.command))
@@ -112,8 +118,6 @@ def show(args):
 
 def main():
     """Main function."""
-    check()  # TODO sin implementar
-
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(help='commands', dest='command')
 
