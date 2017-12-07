@@ -69,17 +69,22 @@ def check():
 # puede ser buena idea separar init, add y rm en archivos diferentes
 def init(args):
     """Initialize new password storage."""
-    # if args.verbose:
-    #     print("{} command used".format(args.command))
-    #     print(args)
+    if args.verbose:
+        print("{} command used".format(args.command))
+        print(args)
+        print()
     if not isdir(PASSWORD_FOLDER):
         # crear si no existe la carpeta "$HOME/.password-store/"
         makedirs(PASSWORD_FOLDER, exist_ok=True)
-    # coger args.gpg_id y meterlo en "$HOME/.password-store/.gpg-id" si no existe
-    gpg_file_path = expanduser(PASSWORD_FOLDER + GPG_FILE)
+        if args.verbose:
+            print("Created directory " + PASSWORD_FOLDER)
+    # coger args.gpg_id y meterlo en "$HOME/.password-store/.gpg-id"
+    gpg_file_path = PASSWORD_FOLDER + GPG_FILE
     f = open(gpg_file_path, 'w')
     f.write(args.gpg_id)
     f.close()
+    if args.verbose:
+        print("Created file " + gpg_file_path)
 
 
 def add(args):
