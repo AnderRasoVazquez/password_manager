@@ -139,7 +139,7 @@ def mkdir_if_not_exists(folder, verbose_mode=False):
             print("Created {}".format(folder))
 
 
-def build_absolute_path(path, ext="gpg"):
+def build_absolute_path(path, ext=".gpg"):
     """Builds absolute '.gpg' file path."""
     return PASSWORD_FOLDER + path + ext
 
