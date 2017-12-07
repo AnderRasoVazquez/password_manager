@@ -58,7 +58,7 @@ def check():
     if not which("gpg"):
         sys.exit("GPG binary not found. ¿Is it installed?")
     gpg_file_path = expanduser(PASSWORD_FOLDER + GPG_FILE)
-    if isfile(gpg_file_path):
+    if not isfile(gpg_file_path):
         sys.exit("WARNING: password store not configured, please execute:\nyapm init")
     with open(gpg_file_path) as gpg_file_content:
         global GPG_ID
