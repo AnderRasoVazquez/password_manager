@@ -7,6 +7,7 @@ from getpass import getpass
 from os import makedirs
 from os.path import isfile, isdir, expanduser
 from shutil import which
+from subprocess import Popen, PIPE
 
 __version__ = 0.1
 
@@ -57,11 +58,11 @@ GPG_FILE = ".gpg-id"
 ##################################################################
 
 
-def check():
+def check_config():
     """Initial checks before running the program."""
     if not which("gpg"):
         sys.exit("GPG binary not found. ¿Is it installed?")
-    gpg_file_path = expanduser(PASSWORD_FOLDER + GPG_FILE)
+    gpg_file_path = PASSWORD_FOLDER + GPG_FILE
     if not isfile(gpg_file_path):
         sys.exit("WARNING: password store not configured, please execute:\nyapm init")
     with open(gpg_file_path) as gpg_file_content:
@@ -100,28 +101,73 @@ def build_pass(args):
     if args.numbers:
         passw += string.digits
 
+    if args.verbose:
+        print("Building password with options: {}".format(args))
+
     return "".join([passw[randint(0, len(passw) - 1)] for x in range(args.length)])
 
 
-def add(args):
-    """Add new password to the storage."""
-    check()
+def encrypt_password(passw):
+    """Encrypts a string using GPG."""
+    # https://docs.python.org/3/library/subprocess.html#replacing-shell-pipeline
+    p1 = Popen(["echo", passw], stdout=PIPE)
+    p2 = Popen(["gpg", "--encrypt", "--armor", "-r", GPG_ID], stdin=p1.stdout, stdout=PIPE)
+    p1.stdout.close()  # Allow p1 to receive a SIGPIPE if p2 exits.
+    output = p2.communicate()[0]  # in bytes, we need to decode it
+    return output.decode()  # default is "utf-8"
+
+
+def write_file(file_path, file_content, verbose_mode=False, mode='w'):
+    """Write content to a file."""
+    with open(file_path, mode) as file:
+        file.write(file_content)
+        if verbose_mode:
+            print("{} written.".format(file_path))
+
+
+def get_folder(path):
+    """Return folder name."""
+    path_args = path.split('/')
+    return "/".join(path_args[0:-1])
+
+
+def mkdir_if_not_exists(folder, verbose_mode=False):
+    """Creates a folder if not exists."""
+    if not isdir(folder):
+        makedirs(folder)
+        if verbose_mode:
+            print("Created {}".format(folder))
+
+
+def build_absolute_path(path, ext="gpg"):
+    """Builds absolute '.gpg' file path."""
+    return PASSWORD_FOLDER + path + ext
+
+
+def get_passw(args):
+    """Returns a manual typed or generated password."""
     if args.insert:
         passw = getpass("Insert password: ")
     else:
         passw = build_pass(args)
-    print(passw)
-        # coger el args.password_dest y mirar si tiene '/'
-        # por ejemplo "email/google.gpg", crearia la carpeta email y dentro un archivo "google.gpg" con la contraseña
-        # El archivo se cifra usando el "$HOME/.password-store/.gpg-id" que deberiamos tener ya en GPG_ID
-        # si tiene mas de un '/' serian multiples carpetas
+        print("Generated password:\n{}".format(passw))
+    return passw
 
-        # UN EJEMPLO DE IMPLEMENTACION para 'lol/lel/muehehe':
-        # "lol/lel/muehehe".split('/') # ['lol', 'lel', 'muehehe']
-        # argumentos = "lol/lel/muehehe".split('/')
-        # argumentos[0:-1]  # desde el principio hasta el penultimo ['lol', 'lel']
-        # "/".join(argumentos[0:-1])  # se pueden juntar de nuevo 'lol/lel' para hacer un 'mkdir -p'
-        # nombre = argumentos[-1]  # el ultimo, 'muehehe'
+
+def add(args):
+    """Add new password to the storage."""
+    check_config()
+    passw = get_passw(args)
+
+    encrypted_passw = encrypt_password(passw)
+    path = args.password_dest
+
+    if '/' in path:
+        folder = get_folder(path)
+        mkdir_if_not_exists(PASSWORD_FOLDER + folder, args.verbose)
+
+    absolute_file_path = build_absolute_path(path)
+    write_file(absolute_file_path, encrypted_passw, args.verbose)
 
 
 def rm(args):
