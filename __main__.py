@@ -1,6 +1,7 @@
 """This module manages a password storage."""
 import argparse
 import sys
+from os import makedirs
 from os.path import isfile, isdir, expanduser
 from shutil import which
 
