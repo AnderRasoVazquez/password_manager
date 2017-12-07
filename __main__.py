@@ -154,13 +154,22 @@ def get_passw(args):
     return passw
 
 
+def parse_path(path):
+    """Strip starting or ending '/'."""
+    if path.startswith('/'):
+        path = path[1:]
+    if path.endswith('/'):
+        path = path[:-1]
+    return path
+
+
 def add(args):
     """Add new password to the storage."""
     check_config()
     passw = get_passw(args)
 
     encrypted_passw = encrypt_password(passw)
-    path = args.password_dest
+    path = parse_path(args.password_dest)
 
     if '/' in path:
         folder = get_folder(path)
