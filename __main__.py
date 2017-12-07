@@ -7,6 +7,47 @@ __version__ = 0.1
 
 GPG_ID = None
 
+#################################################################
+# EJEMPLO DE USO
+#
+# `yapm`
+# sin argumentos por defecto hace `yapm -h`, muestra la ayuda
+#
+# INIT
+# `yapm init 7D9D16BE`
+# crea la carpeta del programa "$HOME/.password-store" y crea un archivo
+# "$HOME/.password-store/.gpg.id" donde guarda el id de GPG, el que ves es el mío.
+# He pensado en esos nombres para que sea compatible con otros password managers
+# que también usan gpg (hay hasta para Android).
+# De esta manera se puede sincronizar con otros pc o el movil
+#
+# ADD
+# `yapm add prueba`
+# crea un archivo "$HOME/.password-store/prueba.gpg" con una clave random de solo
+# minusculas y de 21 caracteres por defecto (21 he sacado de otro password manager)
+# `yapm add prueba -sun -l 15`
+# -s -> symbols
+# -u -> uppercase
+# -n -> numbers
+# -l 15-> longitud 15
+# `yapm add prueba -i`
+# te sale un input para que pongas tu el password que ya tengas
+#
+# RM
+# `yamp rm prueba`
+# elimina el password, sin mas
+#
+# SHOW
+# `yapm show prueba`
+# Descifra "$HOME/.password-store/prueba.gpg" y lo muestra por la terminal
+# GPG te pedira el password de tu clave para hacerlo
+# `yapm show -c prueba`
+# Descifra el password y lo copia a tu clipboard
+# Estaria bien que lo borrase des clipboard despues de 45 segundos por ejemplo,
+# eso seguro que le mola a Mikel
+#
+##################################################################
+
 
 def check():
     """Initial checks before running the program."""
@@ -59,6 +100,16 @@ def rm(args):
         # 'lol/lel/' borrar la carpeta
 
 
+def show(args):
+    """Decrypt password and show it."""
+    if args.verbose:
+        print("{} command used".format(args.command))
+        print(args)
+    # descifraria el password dado
+        # si tiene la opcion -c podria copiarlo al clipboard
+        # si no, lo mostraria por la terminal
+
+
 def main():
     """Main function."""
     check()  # TODO sin implementar
@@ -106,6 +157,14 @@ def main():
     parser_remove.add_argument('password_dest',
                                help='password destination')
 
+    # parser for init command
+    parser_show = subparsers.add_parser('show', help='shows password')
+    parser_show.add_argument('password_dest',
+                             help='password destination')
+    parser_show.add_argument('-c', '--clipboard',
+                             action='store_true',
+                             help='copy password to clipboard instead of printing it')
+
     # if no argument was provided append '-h'
     if not sys.argv[1:]:
         sys.argv.extend(['-h'])
@@ -121,6 +180,8 @@ def main():
         add(args)
     elif args.command == 'rm':
         rm(args)
+    elif args.command == 'show':
+        show(args)
 
 
 if __name__ == '__main__':
