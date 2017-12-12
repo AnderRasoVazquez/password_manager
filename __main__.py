@@ -140,6 +140,7 @@ def remove_file(path, verbose_mode=False):
     else:
         print("{} is not a file".format(path))
 
+
 def remove_dir(path, verbose_mode=False):
     """Empties and deletes a directory recursively."""
     if isdir(path) and path.startswith(PASSWORD_FOLDER):
@@ -205,7 +206,7 @@ def rm(args):
     """Remove password from the storage."""
     # DAVID
     check_config()
-    path = PASSWORD_FOLDER +  parse_path(args.password_dest)
+    path = PASSWORD_FOLDER + parse_path(args.password_dest)
     if isfile(path):
         remove_file(path, args.verbose)
     elif isdir(path):
