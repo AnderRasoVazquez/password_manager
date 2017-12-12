@@ -212,16 +212,14 @@ def rm(args):
     """Remove password from the storage."""
     # DAVID
     check_config()
-    path = PASSWORD_FOLDER + parse_path(args.password_dest)
+    path = PASSWORD_FOLDER + parse_path(args.path)
     if isfile(path):
         remove_file(path, args.verbose)
     elif isdir(path):
-        remove_dir(path, args.verbose)
-    # if args.verbose:
-    #     print("{} command used".format(args.command))
-    #     print(args)
-    # podria borrar lo que le dijeras 'lol/lel/muehehe.gpg' borraria el archivo
-        # 'lol/lel/' borrar la carpeta
+        if args.recursive:
+            remove_dir(path, args.verbose)
+        else:
+            print("{} is a directory".format(path))
 
 
 def show(args):
@@ -276,8 +274,11 @@ def build_parser():
 
     # parser for rm command
     parser_remove = subparsers.add_parser('rm', help='removes a stored password')
-    parser_remove.add_argument('password_dest',
-                               help='password destination')
+    parser_remove.add_argument('path',
+                               help='path to the password (or folder if -r is used)')
+    parser_remove.add_argument('-r', '--recursive',
+                               action='store_true',
+                               help='removes a folder recursively')
 
     # parser for init command
     parser_show = subparsers.add_parser('show', help='shows password')
