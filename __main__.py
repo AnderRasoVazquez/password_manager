@@ -198,8 +198,8 @@ def show(args):
         # si no, lo mostraria por la terminal
 
 
-def main():
-    """Main function."""
+def build_parser():
+    """Build parser."""
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(help='commands', dest='command')
 
@@ -249,6 +249,13 @@ def main():
     parser_show.add_argument('-c', '--clipboard',
                              action='store_true',
                              help='copy password to clipboard instead of printing it')
+
+    return parser
+
+
+def main():
+    """Main function."""
+    parser = build_parser()
 
     # if no argument was provided append '-h'
     if not sys.argv[1:]:
