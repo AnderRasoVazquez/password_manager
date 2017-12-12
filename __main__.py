@@ -73,6 +73,7 @@ def check_config():
 # puede ser buena idea separar init, add y rm en archivos diferentes
 def init(args):
     """Initialize new password storage."""
+    # DAVID
     if args.verbose:
         print("{} command used".format(args.command))
         print(args)
@@ -181,6 +182,7 @@ def add(args):
 
 def rm(args):
     """Remove password from the storage."""
+    # DAVID
     if args.verbose:
         print("{} command used".format(args.command))
         print(args)
@@ -190,6 +192,7 @@ def rm(args):
 
 def show(args):
     """Decrypt password and show it."""
+    # DAVID
     if args.verbose:
         print("{} command used".format(args.command))
         print(args)
