@@ -4,7 +4,7 @@ import sys
 import string
 from random import randint
 from getpass import getpass
-from os import makedirs, remove
+from os import makedirs, remove, listdir, rmdir
 from os.path import isfile, isdir, expanduser
 from shutil import which
 from subprocess import Popen, PIPE
@@ -140,6 +140,26 @@ def rmfile(path, verbose_mode=False):
     else:
         print("{} is not a file".format(path))
 
+def deldir(path, verbose_mode=False):
+    """Deletes a directory recursively."""
+    if isdir(path) and path.startswith(PASSWORD_FOLDER):
+        # como medida de seguridad para asegurar que no se le pasa
+        # ningún directorio fuera del area de trabajo (como /, p.e.)
+        for entry in listdir(path):
+            # para cada entrada en el directorio, se eliminan los archivos
+            # y se llama recursivamente a la función en los directorios
+            # al terminar, se elimina el directorio (ahora vacío)
+            full_entry = "/".join((path, entry))
+            if isfile(full_entry):
+                rmfile(full_entry, verbose_mode)
+            elif isdir(full_entry):
+                deldir(full_entry, verbose_mode)
+        rmdir(path)
+        if verbose_mode:
+            print("Deleted {}".format(path))
+    else:
+        print("{} is not a valid directory".format(path))
+
 
 def build_absolute_path(path, ext=".gpg"):
     """Builds absolute '.gpg' file path."""
@@ -189,7 +209,7 @@ def rm(args):
     if isfile(path):
         rmfile(path, args.verbose)
     elif isdir(path):
-        print("dir")
+        deldir(path, args.verbose)
     # if args.verbose:
     #     print("{} command used".format(args.command))
     #     print(args)
