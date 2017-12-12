@@ -8,6 +8,7 @@ from os import makedirs, remove, listdir, rmdir
 from os.path import isfile, isdir, expanduser
 from shutil import which
 from subprocess import Popen, PIPE
+import signal
 
 __version__ = 0.1
 
@@ -56,6 +57,11 @@ GPG_FILE = ".gpg-id"
 # eso seguro que le mola a Mikel
 #
 ##################################################################
+
+
+def signal_handler(signal, frame):
+    """KeyboardInterrupt signal handler."""
+    sys.exit("\nExecution aborted!")
 
 
 def check_config():
@@ -286,6 +292,7 @@ def build_parser():
 
 def main():
     """Main function."""
+    signal.signal(signal.SIGINT, signal_handler)
     parser = build_parser()
 
     # if no argument was provided append '-h'
