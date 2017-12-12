@@ -4,7 +4,7 @@ import sys
 import string
 from random import randint
 from getpass import getpass
-from os import makedirs
+from os import makedirs, remove
 from os.path import isfile, isdir, expanduser
 from shutil import which
 from subprocess import Popen, PIPE
@@ -82,6 +82,7 @@ def init(args):
     gpg_file_path = PASSWORD_FOLDER + GPG_FILE
     write_file(gpg_file_path, args.gpg_id, args.verbose)
 
+
 def build_pass(args):
     """Build a password based on args."""
     passw = string.ascii_lowercase
@@ -130,6 +131,16 @@ def mkdir_if_not_exists(folder, verbose_mode=False):
             print("Created {}".format(folder))
 
 
+def rmfile(path, verbose_mode=False):
+    """Deletes a file."""
+    if isfile(path):
+        remove(path)
+        if verbose_mode:
+            print("Deleted {}".format(path))
+    else:
+        print("{} is not a file".format(path))
+
+
 def build_absolute_path(path, ext=".gpg"):
     """Builds absolute '.gpg' file path."""
     return PASSWORD_FOLDER + path + ext
@@ -173,9 +184,15 @@ def add(args):
 def rm(args):
     """Remove password from the storage."""
     # DAVID
-    if args.verbose:
-        print("{} command used".format(args.command))
-        print(args)
+    check_config()
+    path = PASSWORD_FOLDER +  parse_path(args.password_dest)
+    if isfile(path):
+        rmfile(path, args.verbose)
+    elif isdir(path):
+        print("dir")
+    # if args.verbose:
+    #     print("{} command used".format(args.command))
+    #     print(args)
     # podria borrar lo que le dijeras 'lol/lel/muehehe.gpg' borraria el archivo
         # 'lol/lel/' borrar la carpeta
 
