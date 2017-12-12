@@ -131,7 +131,7 @@ def mkdir_if_not_exists(folder, verbose_mode=False):
             print("Created {}".format(folder))
 
 
-def rmfile(path, verbose_mode=False):
+def remove_file(path, verbose_mode=False):
     """Deletes a file."""
     if isfile(path):
         remove(path)
@@ -140,7 +140,7 @@ def rmfile(path, verbose_mode=False):
     else:
         print("{} is not a file".format(path))
 
-def removedir(path, verbose_mode=False):
+def remove_dir(path, verbose_mode=False):
     """Empties and deletes a directory recursively."""
     if isdir(path) and path.startswith(PASSWORD_FOLDER):
         # como medida de seguridad para asegurar que no se le pasa
@@ -151,9 +151,9 @@ def removedir(path, verbose_mode=False):
             # al terminar, se elimina el directorio (ahora vacío)
             full_entry = "/".join((path, entry))
             if isfile(full_entry):
-                rmfile(full_entry, verbose_mode)
+                remove_file(full_entry, verbose_mode)
             elif isdir(full_entry):
-                removedir(full_entry, verbose_mode)
+                remove_dir(full_entry, verbose_mode)
         rmdir(path)
         if verbose_mode:
             print("Deleted {}".format(path))
@@ -207,9 +207,9 @@ def rm(args):
     check_config()
     path = PASSWORD_FOLDER +  parse_path(args.password_dest)
     if isfile(path):
-        rmfile(path, args.verbose)
+        remove_file(path, args.verbose)
     elif isdir(path):
-        removedir(path, args.verbose)
+        remove_dir(path, args.verbose)
     # if args.verbose:
     #     print("{} command used".format(args.command))
     #     print(args)
