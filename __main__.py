@@ -78,19 +78,9 @@ def init(args):
         print("{} command used".format(args.command))
         print(args)
         print()
-    if not isdir(PASSWORD_FOLDER):
-        # crear si no existe la carpeta "$HOME/.password-store/"
-        makedirs(PASSWORD_FOLDER, exist_ok=True)
-        if args.verbose:
-            print("Created directory " + PASSWORD_FOLDER)
-    # coger args.gpg_id y meterlo en "$HOME/.password-store/.gpg-id"
+    mkdir_if_not_exists(PASSWORD_FOLDER, args.verbose)
     gpg_file_path = PASSWORD_FOLDER + GPG_FILE
-    f = open(gpg_file_path, 'w')
-    f.write(args.gpg_id)
-    f.close()
-    if args.verbose:
-        print("Created file " + gpg_file_path)
-
+    write_file(gpg_file_path, args.gpg_id, args.verbose)
 
 def build_pass(args):
     """Build a password based on args."""
