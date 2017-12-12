@@ -104,7 +104,7 @@ def build_pass(args):
     if args.verbose:
         print("Building password with options: {}".format(args))
 
-    return "".join([passw[randint(0, len(passw) - 1)] for x in range(args.length)])
+    return "".join([passw[randint(0, len(passw) - 1)] for _ in range(args.length)])
 
 
 def encrypt_password(passw):
