@@ -140,8 +140,8 @@ def rmfile(path, verbose_mode=False):
     else:
         print("{} is not a file".format(path))
 
-def deldir(path, verbose_mode=False):
-    """Deletes a directory recursively."""
+def removedir(path, verbose_mode=False):
+    """Empties and deletes a directory recursively."""
     if isdir(path) and path.startswith(PASSWORD_FOLDER):
         # como medida de seguridad para asegurar que no se le pasa
         # ningún directorio fuera del area de trabajo (como /, p.e.)
@@ -153,7 +153,7 @@ def deldir(path, verbose_mode=False):
             if isfile(full_entry):
                 rmfile(full_entry, verbose_mode)
             elif isdir(full_entry):
-                deldir(full_entry, verbose_mode)
+                removedir(full_entry, verbose_mode)
         rmdir(path)
         if verbose_mode:
             print("Deleted {}".format(path))
@@ -209,7 +209,7 @@ def rm(args):
     if isfile(path):
         rmfile(path, args.verbose)
     elif isdir(path):
-        deldir(path, args.verbose)
+        removedir(path, args.verbose)
     # if args.verbose:
     #     print("{} command used".format(args.command))
     #     print(args)
