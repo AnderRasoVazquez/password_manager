@@ -4,7 +4,7 @@ import sys
 import string
 from random import randint
 from getpass import getpass
-from os import makedirs
+from os import makedirs, remove, listdir, rmdir
 from os.path import isfile, isdir, expanduser
 from shutil import which
 from subprocess import Popen, PIPE
@@ -79,22 +79,14 @@ def check_config():
 # puede ser buena idea separar init, add y rm en archivos diferentes
 def init(args):
     """Initialize new password storage."""
+    # DAVID
     if args.verbose:
         print("{} command used".format(args.command))
         print(args)
         print()
-    if not isdir(PASSWORD_FOLDER):
-        # crear si no existe la carpeta "$HOME/.password-store/"
-        makedirs(PASSWORD_FOLDER, exist_ok=True)
-        if args.verbose:
-            print("Created directory " + PASSWORD_FOLDER)
-    # coger args.gpg_id y meterlo en "$HOME/.password-store/.gpg-id"
+    mkdir_if_not_exists(PASSWORD_FOLDER, args.verbose)
     gpg_file_path = PASSWORD_FOLDER + GPG_FILE
-    f = open(gpg_file_path, 'w')
-    f.write(args.gpg_id)
-    f.close()
-    if args.verbose:
-        print("Created file " + gpg_file_path)
+    write_file(gpg_file_path, args.gpg_id, args.verbose)
 
 
 def build_pass(args):
@@ -145,6 +137,37 @@ def mkdir_if_not_exists(folder, verbose_mode=False):
             print("Created {}".format(folder))
 
 
+def remove_file(path, verbose_mode=False):
+    """Deletes a file."""
+    if isfile(path):
+        remove(path)
+        if verbose_mode:
+            print("Deleted {}".format(path))
+    else:
+        print("{} is not a file".format(path))
+
+
+def remove_dir(path, verbose_mode=False):
+    """Empties and deletes a directory recursively."""
+    if isdir(path) and path.startswith(PASSWORD_FOLDER):
+        # como medida de seguridad para asegurar que no se le pasa
+        # ningún directorio fuera del area de trabajo (como /, p.e.)
+        for entry in listdir(path):
+            # para cada entrada en el directorio, se eliminan los archivos
+            # y se llama recursivamente a la función en los directorios
+            # al terminar, se elimina el directorio (ahora vacío)
+            full_entry = "/".join((path, entry))
+            if isfile(full_entry):
+                remove_file(full_entry, verbose_mode)
+            elif isdir(full_entry):
+                remove_dir(full_entry, verbose_mode)
+        rmdir(path)
+        if verbose_mode:
+            print("Deleted {}".format(path))
+    else:
+        print("{} is not a valid directory".format(path))
+
+
 def build_absolute_path(path, ext=".gpg"):
     """Builds absolute '.gpg' file path."""
     return PASSWORD_FOLDER + path + ext
@@ -187,15 +210,21 @@ def add(args):
 
 def rm(args):
     """Remove password from the storage."""
-    if args.verbose:
-        print("{} command used".format(args.command))
-        print(args)
-    # podria borrar lo que le dijeras 'lol/lel/muehehe.gpg' borraria el archivo
-        # 'lol/lel/' borrar la carpeta
+    # DAVID
+    check_config()
+    path = PASSWORD_FOLDER + parse_path(args.path)
+    if isfile(path):
+        remove_file(path, args.verbose)
+    elif isdir(path):
+        if args.recursive:
+            remove_dir(path, args.verbose)
+        else:
+            print("{} is a directory".format(path))
 
 
 def show(args):
     """Decrypt password and show it."""
+    # DAVID
     if args.verbose:
         print("{} command used".format(args.command))
         print(args)
@@ -245,8 +274,11 @@ def build_parser():
 
     # parser for rm command
     parser_remove = subparsers.add_parser('rm', help='removes a stored password')
-    parser_remove.add_argument('password_dest',
-                               help='password destination')
+    parser_remove.add_argument('path',
+                               help='path to the password (or folder if -r is used)')
+    parser_remove.add_argument('-r', '--recursive',
+                               action='store_true',
+                               help='removes a folder recursively')
 
     # parser for init command
     parser_show = subparsers.add_parser('show', help='shows password')
