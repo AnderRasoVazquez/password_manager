@@ -115,6 +115,17 @@ def encrypt_password(passw):
     return output.decode()  # default is "utf-8"
 
 
+def decrypt_password(encrypted_passw):
+    """Decrypts a string using GPG."""
+    # TODO hacer...
+    # https://docs.python.org/3/library/subprocess.html
+    p1 = Popen(["echo", encrypted_passw], stdout=PIPE)
+    p2 = Popen(["gpg", "--decrypt"], stdin=p1.stdout, stdout=PIPE)
+    p1.stdout.close()  # Allow p1 to receive a SIGPIPE if p2 exits.
+    output = p2.communicate()[0]  # in bytes, we need to decode it
+    return output.decode()  # default is "utf-8"
+
+
 def write_file(file_path, file_content, verbose_mode=False, mode='w'):
     """Write content to a file."""
     with open(file_path, mode) as file:
