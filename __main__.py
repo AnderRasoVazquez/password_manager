@@ -139,7 +139,7 @@ def mkdir_if_not_exists(folder, verbose_mode=False):
 
 def remove_file(path, verbose_mode=False):
     """Deletes a file."""
-    if isfile(path):
+    if isfile(path) and path.startswith(PASSWORD_FOLDER):
         remove(path)
         if verbose_mode:
             print("Deleted {}".format(path))
