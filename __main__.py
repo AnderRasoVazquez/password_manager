@@ -242,18 +242,15 @@ def show(args):
         with open(path) as pass_file_content:
             encrypted_passw = pass_file_content.read().strip()
         passw = decrypt_password(encrypted_passw).strip()
-        try:
-            string = ""
-            for t in range(1, args.time + 1)[::-1]:
-                print(" "*string.__len__(), end='\r')
-                # string "vacía" (invisible) para borrar el input anterior
-                # tiene que haber una forma mas bonita... ni siquiera lo borraria tdo si la pass fuera lo bastante larga
-                string = "You have {0} second(s) to copy the password: {1}".format(t, passw)
-                print(string, end='\r')
-                sleep(1)
-        except KeyboardInterrupt:
-            pass
-        print("                                                                                      ", end='\r')
+        string = ""
+        for t in range(1, args.time + 1)[::-1]:
+            print(" "*string.__len__(), end='\r')
+            # string "vacía" (invisible) para borrar el input anterior
+            # tiene que haber una forma mas bonita...
+            string = "You have {0} second(s) to copy the password: {1}".format(t, passw)
+            print(string, end='\r')
+            sleep(1)
+        print(" " * string.__len__(), end='\r')
         print("Time has expired")
 
     else:
