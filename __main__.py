@@ -229,6 +229,8 @@ def rm(args):
             remove_dir(path, args.verbose)
         else:
             print("{} is a directory".format(path))
+    else:
+        print("{} is not a file".format(path))
 
 
 def show(args):
