@@ -8,6 +8,7 @@ from os import makedirs, remove, listdir, rmdir
 from os.path import isfile, isdir, expanduser
 from shutil import which
 from subprocess import Popen, PIPE
+from time import sleep
 import signal
 
 __version__ = 0.1
@@ -79,7 +80,6 @@ def check_config():
 # puede ser buena idea separar init, add y rm en archivos diferentes
 def init(args):
     """Initialize new password storage."""
-    # DAVID
     if args.verbose:
         print("{} command used".format(args.command))
         print(args)
@@ -221,7 +221,6 @@ def add(args):
 
 def rm(args):
     """Remove password from the storage."""
-    # DAVID
     check_config()
     path = PASSWORD_FOLDER + parse_path(args.path)
     if isfile(path):
@@ -235,13 +234,24 @@ def rm(args):
 
 def show(args):
     """Decrypt password and show it."""
-    # DAVID
-    if args.verbose:
-        print("{} command used".format(args.command))
-        print(args)
-    # descifraria el password dado
-        # si tiene la opcion -c podria copiarlo al clipboard
-        # si no, lo mostraria por la terminal
+    # https: // docs.python.org / 3 / library / functions.html  # print
+    # TODO terminar
+    check_config()
+    path = PASSWORD_FOLDER + parse_path(args.path)
+    if isfile(path):
+        with open(path) as pass_file_content:
+            encrypted_passw = pass_file_content.read().strip()
+        passw = decrypt_password(encrypted_passw).strip()
+        for t in range(1, 11)[::-1]:
+            print("                                                      ", end='\r')
+            # string "vacía" (invisible) para borrar el input anterior
+            # tiene que haber una forma mas bonita...
+            print("You have {0} second(s) to copy the password: {1}".format(t, passw), end='\r')
+            sleep(1)
+        print("                                                      ", end='\r')
+        print("Time has expired")
+    else:
+        print("{} is not a stored password".format(path))
 
 
 def build_parser():
