@@ -221,16 +221,18 @@ def add(args):
 def rm(args):
     """Remove password from the storage."""
     check_config()
-    path = build_absolute_path(parse_path(args.path))
-    if isfile(path):
-        remove_file(path, args.verbose)
-    elif isdir(path):
-        if args.recursive:
-            remove_dir(path, args.verbose)
-        else:
-            print("{} is a directory".format(path))
+    file_path = build_absolute_path(parse_path(args.path))
+    if isfile(file_path):
+        remove_file(file_path, args.verbose)
     else:
-        print("{} is not a file".format(path))
+        dir_path = PASSWORD_FOLDER + parse_path(args.path)
+        if isdir(dir_path):
+            if args.recursive:
+                remove_dir(dir_path, args.verbose)
+            else:
+                print("{} is a directory (-r required)".format(dir_path))
+        else:
+            print("{} is not a file (.gpg) or a directory".format(dir_path))
 
 
 def show(args):
