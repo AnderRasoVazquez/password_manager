@@ -17,6 +17,7 @@ __version__ = 0.1
 GPG_ID = None
 PASSWORD_FOLDER = expanduser("~/.password-store/")
 GPG_FILE = ".gpg-id"
+MAX_TIME = 30
 
 #################################################################
 # EJEMPLO DE USO
@@ -244,8 +245,11 @@ def show(args):
         with open(path) as pass_file_content:
             encrypted_passw = pass_file_content.read().strip()
         passw = decrypt_password(encrypted_passw).strip()
+        tm = args.time
+        if tm > MAX_TIME:
+            tm = MAX_TIME
         text = ""
-        for t in range(1, args.time + 1)[::-1]:
+        for t in range(1, tm + 1)[::-1]:
             print(" "*text.__len__(), end='\r')
             # string "vacía" (invisible) para borrar el input anterior
             # tiene que haber una forma mas bonita...
@@ -310,9 +314,9 @@ def build_parser():
     parser_show = subparsers.add_parser('show', help='shows a stored password')
     parser_show.add_argument('path',
                              help='path to the password')
-    parser_show.add_argument('-c', '--clipboard',
-                             action='store_true',
-                             help='copy password to clipboard instead of printing it')
+    # parser_show.add_argument('-c', '--clipboard',
+    #                          action='store_true',
+    #                          help='copy password to clipboard instead of printing it')
     parser_show.add_argument('-t', '--time',
                              type=int,
                              default=10,
