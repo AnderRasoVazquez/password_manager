@@ -281,14 +281,9 @@ def build_parser():
                                help='removes a folder recursively')
 
     # parser for show command
-    parser_remove = subparsers.add_parser('show', help='shows a stored password')
-    parser_remove.add_argument('path',
+    parser_show = subparsers.add_parser('show', help='shows a stored password')
+    parser_show.add_argument('path',
                                help='path to the password')
-
-    # parser for init command
-    parser_show = subparsers.add_parser('show', help='shows password')
-    parser_show.add_argument('password_dest',
-                             help='password destination')
     parser_show.add_argument('-c', '--clipboard',
                              action='store_true',
                              help='copy password to clipboard instead of printing it')
