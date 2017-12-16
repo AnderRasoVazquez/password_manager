@@ -237,7 +237,7 @@ def show(args):
     # https: // docs.python.org / 3 / library / functions.html  # print
     # TODO terminar
     check_config()
-    path = PASSWORD_FOLDER + parse_path(args.path)
+    path = build_absolute_path(parse_path(args.path))
     if isfile(path):
         with open(path) as pass_file_content:
             encrypted_passw = pass_file_content.read().strip()
