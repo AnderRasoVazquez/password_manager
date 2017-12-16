@@ -117,7 +117,6 @@ def encrypt_password(passw):
 
 def decrypt_password(encrypted_passw):
     """Decrypts a string using GPG."""
-    # TODO hacer...
     # https://docs.python.org/3/library/subprocess.html
     p1 = Popen(["echo", encrypted_passw], stdout=PIPE)
     p2 = Popen(["gpg", "--decrypt"], stdin=p1.stdout, stdout=PIPE)
@@ -235,22 +234,21 @@ def rm(args):
 def show(args):
     """Decrypt password and show it."""
     # https: // docs.python.org / 3 / library / functions.html  # print
-    # TODO terminar
     check_config()
     path = build_absolute_path(parse_path(args.path))
     if isfile(path):
         with open(path) as pass_file_content:
             encrypted_passw = pass_file_content.read().strip()
         passw = decrypt_password(encrypted_passw).strip()
-        string = ""
+        text = ""
         for t in range(1, args.time + 1)[::-1]:
-            print(" "*string.__len__(), end='\r')
+            print(" "*text.__len__(), end='\r')
             # string "vacía" (invisible) para borrar el input anterior
             # tiene que haber una forma mas bonita...
-            string = "You have {0} second(s) to copy the password: {1}".format(t, passw)
-            print(string, end='\r')
+            text = "You have {0} second(s) to copy the password: {1}".format(t, passw)
+            print(text, end='\r')
             sleep(1)
-        print(" " * string.__len__(), end='\r')
+        print(" " * text.__len__(), end='\r')
         print("Time has expired")
 
     else:
@@ -307,14 +305,14 @@ def build_parser():
     # parser for show command
     parser_show = subparsers.add_parser('show', help='shows a stored password')
     parser_show.add_argument('path',
-                               help='path to the password')
+                             help='path to the password')
     parser_show.add_argument('-c', '--clipboard',
                              action='store_true',
                              help='copy password to clipboard instead of printing it')
     parser_show.add_argument('-t', '--time',
-                            type=int,
-                            default=10,
-                            help='time the password is shown on screen')
+                             type=int,
+                             default=10,
+                             help='time the password is shown on screen')
 
     return parser
 
