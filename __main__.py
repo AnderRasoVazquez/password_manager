@@ -242,14 +242,20 @@ def show(args):
         with open(path) as pass_file_content:
             encrypted_passw = pass_file_content.read().strip()
         passw = decrypt_password(encrypted_passw).strip()
-        for t in range(1, 11)[::-1]:
-            print("                                                      ", end='\r')
-            # string "vacía" (invisible) para borrar el input anterior
-            # tiene que haber una forma mas bonita...
-            print("You have {0} second(s) to copy the password: {1}".format(t, passw), end='\r')
-            sleep(1)
-        print("                                                      ", end='\r')
+        try:
+            string = ""
+            for t in range(1, args.time + 1)[::-1]:
+                print(" "*string.__len__(), end='\r')
+                # string "vacía" (invisible) para borrar el input anterior
+                # tiene que haber una forma mas bonita... ni siquiera lo borraria tdo si la pass fuera lo bastante larga
+                string = "You have {0} second(s) to copy the password: {1}".format(t, passw)
+                print(string, end='\r')
+                sleep(1)
+        except KeyboardInterrupt:
+            pass
+        print("                                                                                      ", end='\r')
         print("Time has expired")
+
     else:
         print("{} is not a stored password".format(path))
 
@@ -308,6 +314,10 @@ def build_parser():
     parser_show.add_argument('-c', '--clipboard',
                              action='store_true',
                              help='copy password to clipboard instead of printing it')
+    parser_show.add_argument('-t', '--time',
+                            type=int,
+                            default=10,
+                            help='time the password is shown on screen')
 
     return parser
 
