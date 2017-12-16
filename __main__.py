@@ -280,6 +280,11 @@ def build_parser():
                                action='store_true',
                                help='removes a folder recursively')
 
+    # parser for show command
+    parser_remove = subparsers.add_parser('show', help='shows a stored password')
+    parser_remove.add_argument('path',
+                               help='path to the password')
+
     # parser for init command
     parser_show = subparsers.add_parser('show', help='shows password')
     parser_show.add_argument('password_dest',
