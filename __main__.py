@@ -173,15 +173,6 @@ def build_absolute_path(path, ext=".gpg"):
     return PASSWORD_FOLDER + path + ext
 
 
-def read_encrypted_passw(path):
-    """Returns the encrypted password from a '.gpg' file
-    without the header and footer"""
-    # https://stackoverflow.com/questions/30833409/python-deleting-the-first-2-lines-of-a-string
-    with open(path) as pass_file_content:
-        encrypted_passw = "\n".join(pass_file_content.read().strip().split('\n')[3:-1])
-    return encrypted_passw
-
-
 def get_passw(args):
     """Returns a manual typed or generated password."""
     if args.insert:
