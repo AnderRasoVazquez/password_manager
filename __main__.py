@@ -221,7 +221,7 @@ def add(args):
 def rm(args):
     """Remove password from the storage."""
     check_config()
-    path = PASSWORD_FOLDER + parse_path(args.path)
+    path = build_absolute_path(parse_path(args.path))
     if isfile(path):
         remove_file(path, args.verbose)
     elif isdir(path):
