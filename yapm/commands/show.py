@@ -18,7 +18,7 @@ def decrypt_password(encrypted_passw):
 
 def show(password_folder, path, clipboard, the_time):
     """Decrypt password and show it."""
-    # https: // docs.python.org / 3 / library / functions.html  # print
+    # https://docs.python.org/3/library/functions.html#print
     path = build_absolute_path(password_folder, parse_path(path))
 
     if isfile(path):
@@ -33,5 +33,3 @@ def show(password_folder, path, clipboard, the_time):
 
     else:
         print("{} is not a stored password".format(path))
-
-
