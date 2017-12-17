@@ -1,6 +1,6 @@
-# [ Inserte nombre del programa ]
+# Yet Another Password Manager
 
-[   ]  is a password manager that cyphers your passwords using your GPG key.
+Yet Another Password Manager (yapm) is a password manager that cyphers your passwords using your GPG key.
 
 ## Features
 
