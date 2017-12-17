@@ -48,6 +48,9 @@ def build_parser():
     parser_remove = subparsers.add_parser('rm', help='removes a stored password')
     parser_remove.add_argument('path',
                                help='path to the password (or folder if -r is used)')
+    parser_remove.add_argument('-r', '--recursive',
+                               action='store_true',
+                               help='remove folder')
 
     # parser for show command
     parser_show = subparsers.add_parser('show', help='shows password')

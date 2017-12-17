@@ -53,7 +53,7 @@ def control(args):
             args.clipboard, PASSWORD_FOLDER, GPG_ID, args.verbose)
     elif args.command == 'rm':
         check_config()
-        rm(PASSWORD_FOLDER, args.path, args.verbose)
+        rm(PASSWORD_FOLDER, args.path, args.recursive, args.verbose)
     elif args.command == 'show':
         if args.time > MAX_TIME:
             args.time = MAX_TIME
