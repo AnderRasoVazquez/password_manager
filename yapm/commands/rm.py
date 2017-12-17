@@ -24,22 +24,24 @@ def remove_dir(path, verbose_mode=False):
         print("Deleted {}".format(path))
 
 
-def confirm():
+def confirm(path):
     """Confirm an action."""
-    result = input("Confirm deletion with [y]: ")
+    result = input("Confirm deletion of {} with [y]: ".format(path))
     return True if result in ['y', 'Y'] else False
 
 
-def rm(password_folder, path, verbose=False):
+def rm(password_folder, path, recursive=False, verbose=False, ext=".gpg"):
     """Remove password from the storage."""
     path = password_folder + parse_path(path)
+    if not recursive:
+        path += ext
     if isfile(path):
-        if confirm():
+        if confirm(path):
             remove_file(path, verbose)
         else:
             sys.exit("Deletion aborted.")
     elif isdir(path):
-        if confirm():
+        if confirm(path):
             remove_dir(path, verbose)
         else:
             sys.exit("Deletion aborted.")
